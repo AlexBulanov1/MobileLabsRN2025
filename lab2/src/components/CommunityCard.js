@@ -8,13 +8,18 @@ const CardContainer = styled.View`
   overflow: hidden;
 `;
 
-const MainImage = styled.ImageBackground`
+const ImageContainer = styled.View`
   height: 180px;
-  justify-content: flex-end;
+  width: 100%;
+`;
+
+const MainImage = styled.Image`
+  width: 100%;
+  height: 100%;
 `;
 
 const PublisherLogoContainer = styled.View`
-  position: absolute;
+  position: absolute; /* Позиціонуємо відносно ImageContainer */
   top: 10px;
   left: 10px;
   background-color: rgba(0, 0, 0, 0.7);
@@ -46,11 +51,12 @@ const Subtitle = styled.Text`
 export default function CommunityCard({ item }) {
   return (
     <CardContainer>
-      <MainImage source={{ uri: item.mainImage }}>
+      <ImageContainer>
+        <MainImage source={{ uri: item.mainImage }} resizeMode="cover" />
         <PublisherLogoContainer>
           <PublisherLogo source={{ uri: item.logo }} resizeMode="contain" />
         </PublisherLogoContainer>
-      </MainImage>
+      </ImageContainer>
       <TextContainer>
         <Title>{item.title}</Title>
         <Subtitle>{item.subtitle}</Subtitle>
