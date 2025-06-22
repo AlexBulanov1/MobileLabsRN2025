@@ -29,9 +29,6 @@ export async function registerForPushNotificationsAsync() {
     alert('Не вдалося отримати дозвіл на push-сповіщення!');
     return;
   }
-  const token = (await Notifications.getExpoPushTokenAsync()).data;
-  
-  return token;
 }
 
 export async function scheduleTaskNotification(task) {
@@ -45,9 +42,9 @@ export async function scheduleTaskNotification(task) {
   try {
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "🔔 Нагадування про завдання!",
-        body: task.title,
-        data: { taskId: task.id },
+        title: "🔔 Нагадування: " + task.title,
+        body: task.description || 'Час виконати завдання!',
+        data: { taskId: task.id, title: task.title },
       },
       trigger,
     });
@@ -68,4 +65,21 @@ export async function cancelTaskNotification(notificationId) {
   } catch (e) {
     console.error("Помилка скасування сповіщення:", e);
   }
+}
+
+export function setupNotificationListeners() {
+  const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+    const taskData = response.notification.request.content.data;
+    if (taskData?.taskId) {
+      Alert.alert(
+        `Нагадування виконано?`,
+        `Ви натиснули на сповіщення для завдання: "${taskData.title}"`,
+        [{ text: "OK" }]
+      );
+    }
+  });
+
+  return () => {
+    Notifications.removeNotificationSubscription(subscription);
+  };
 }

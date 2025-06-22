@@ -13,6 +13,7 @@ import {
   registerForPushNotificationsAsync, 
   scheduleTaskNotification,
   cancelTaskNotification,
+  setupNotificationListeners,
 } from './src/services/notificationService';
 import AddTaskForm from './src/components/AddTaskForm';
 import TaskItem from './src/components/TaskItem';
@@ -22,6 +23,11 @@ export default function App() {
 
   useEffect(() => {
     registerForPushNotificationsAsync();
+    const removeNotificationListeners = setupNotificationListeners();
+
+    return () => {
+      removeNotificationListeners();
+    };
   }, []);
 
   const handleAddTask = async (taskData) => {
