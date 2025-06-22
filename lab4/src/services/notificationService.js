@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
+import { Platform, Alert } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -10,7 +10,6 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotificationsAsync() {
-  let token;
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -30,7 +29,7 @@ export async function registerForPushNotificationsAsync() {
     alert('Не вдалося отримати дозвіл на push-сповіщення!');
     return;
   }
-  token = (await Notifications.getExpoPushTokenAsync()).data;
+  const token = (await Notifications.getExpoPushTokenAsync()).data;
   
   return token;
 }
@@ -56,5 +55,17 @@ export async function scheduleTaskNotification(task) {
   } catch (error) {
     console.error('Не вдалося запланувати сповіщення:', error);
     return null;
+  }
+}
+
+export async function cancelTaskNotification(notificationId) {
+  if (!notificationId) {
+    return;
+  }
+  try {
+    await Notifications.cancelScheduledNotificationAsync(notificationId);
+    console.log('Заплановане сповіщення скасовано:', notificationId);
+  } catch (e) {
+    console.error("Помилка скасування сповіщення:", e);
   }
 }
