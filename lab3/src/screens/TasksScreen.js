@@ -13,7 +13,8 @@ export default function TasksScreen() {
         renderItem={({ item }) => <TaskItem task={item} />}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContainer}
-        ListHeaderComponent={<Text style={styles.title}>Список Завдань</Text>}
+        ListHeaderComponent={<Text style={styles.title}>Досягнення</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>Виконуйте дії в грі, щоб відкрити досягнення!</Text>}
       />
     </View>
   );
@@ -33,5 +34,12 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     textAlign: 'center',
     marginBottom: theme.spacing.large,
+    paddingTop: theme.spacing.small,
   },
+  emptyText: {
+    fontSize: theme.typography.body,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 50,
+  }
 });

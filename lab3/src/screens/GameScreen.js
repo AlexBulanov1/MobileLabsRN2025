@@ -10,12 +10,13 @@ export default function GameScreen() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View style={styles.scoreContainer}>
-        <Text style={styles.scoreText}>{gameState.score}</Text>
-      </View>
-      <View style={styles.gameArea}>
-        <ClickableObject />
-      </View>
+        <View style={styles.scoreContainer}>
+            <Text style={styles.scoreLabel}>Очки</Text>
+            <Text style={styles.scoreText}>{gameState.score}</Text>
+        </View>
+        <View style={styles.gameArea}>
+            <ClickableObject />
+        </View>
     </GestureHandlerRootView>
   );
 }
@@ -30,6 +31,21 @@ const styles = StyleSheet.create({
   scoreContainer: {
     alignItems: 'center',
     marginBottom: theme.spacing.large * 2,
+    backgroundColor: theme.colors.surface,
+    paddingVertical: theme.spacing.medium,
+    paddingHorizontal: theme.spacing.large,
+    borderRadius: 12,
+    shadowColor: theme.colors.text,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  scoreLabel: {
+    fontSize: theme.typography.body,
+    color: theme.colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   scoreText: {
     fontSize: theme.typography.h1 + 20,
