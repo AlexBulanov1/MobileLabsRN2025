@@ -1,19 +1,9 @@
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  Platform,
-  Keyboard,
-  TouchableWithoutFeedback,
-  Alert
-} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Platform, Keyboard, TouchableWithoutFeedback,  Alert} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Constants from 'expo-constants';
 import { theme } from './src/styles/theme';
+import { registerForPushNotificationsAsync, scheduleTaskNotification } from './src/services/notificationService';
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -23,17 +13,36 @@ export default function App() {
   const [mode, setMode] = useState('date');
   const [showPicker, setShowPicker] = useState(false);
 
-  const addTask = () => {
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => {
+    });
+  }, []);
+
+  const addTask = async () => {
     if (title.trim() === '') {
       Alert.alert('Увага', 'Будь ласка, введіть назву завдання.');
       return;
     }
+
+    const reminderTime = new Date(date);
+    if (reminderTime.getTime() <= Date.now()) {
+        Alert.alert('Увага', 'Будь ласка, оберіть час у майбутньому для нагадування.');
+        return;
+    }
+
     const newTask = {
       id: Date.now().toString(),
       title,
       description,
-      reminderTime: new Date(date),
+      reminderTime,
+      notificationId: null,
     };
+    
+    const notificationId = await scheduleTaskNotification(newTask);
+    if (notificationId) {
+        newTask.notificationId = notificationId;
+    }
+
     setTasks(currentTasks => [newTask, ...currentTasks]);
     setTitle('');
     setDescription('');
