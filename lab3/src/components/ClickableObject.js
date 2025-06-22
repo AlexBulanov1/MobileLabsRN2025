@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Text, StyleSheet, Alert } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
 import { theme } from '../styles/theme';
+import { GameContext } from '../context/GameContext';
 
-export default function ClickableObject({ onGesture }) {
+export default function ClickableObject() {
+  const { performAction } = useContext(GameContext);
+
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
@@ -20,15 +23,15 @@ export default function ClickableObject({ onGesture }) {
   }));
 
   const singleTap = Gesture.Tap().onEnd(() => {
-    runOnJS(onGesture)({ type: 'SINGLE_TAP' });
+    runOnJS(performAction)({ type: 'SINGLE_TAP' });
   });
   
   const doubleTap = Gesture.Tap().numberOfTaps(2).onEnd(() => {
-    runOnJS(onGesture)({ type: 'DOUBLE_TAP' });
+    runOnJS(performAction)({ type: 'DOUBLE_TAP' });
   });
 
   const longPress = Gesture.LongPress().minDuration(800).onStart(() => {
-    runOnJS(onGesture)({ type: 'LONG_PRESS' });
+    runOnJS(performAction)({ type: 'LONG_PRESS' });
   });
 
   const pan = Gesture.Pan()
@@ -40,7 +43,7 @@ export default function ClickableObject({ onGesture }) {
       translateY.value = startPosition.value.y + event.translationY;
     })
     .onEnd((event) => {
-      runOnJS(onGesture)({ type: 'PAN_END' });
+      runOnJS(performAction)({ type: 'PAN_END' });
       
       let flingDirection = null;
       if (event.velocityX > 800) flingDirection = 'right';
@@ -48,7 +51,7 @@ export default function ClickableObject({ onGesture }) {
 
       if (flingDirection) {
         const bonus = Math.floor(Math.random() * 10) + 5;
-        runOnJS(onGesture)({ type: 'FLING', payload: { bonus, direction: flingDirection } });
+        runOnJS(performAction)({ type: 'FLING', payload: { bonus, direction: flingDirection } });
         runOnJS(Alert.alert)(`Свайп ${flingDirection}!`, `+${bonus} очок!`);
       }
       
@@ -67,7 +70,7 @@ export default function ClickableObject({ onGesture }) {
         bonus = 15;
         runOnJS(Alert.alert)('Великий бонус!', `+${bonus} очок!`);
       }
-      runOnJS(onGesture)({ type: 'PINCH_END', payload: { bonus } });
+      runOnJS(performAction)({ type: 'PINCH_END', payload: { bonus } });
       
       scale.value = withSpring(1);
       savedScale.value = 1;
